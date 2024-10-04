@@ -321,8 +321,7 @@ export async function getCategoriesGrouped(
   });
 }
 
-export async function insertCategoryGroup(group) {
-  // Don't allow duplicate group
+async function checkExistingGroups(group) {
   const existingGroup = await first(
     `SELECT id, name, hidden FROM category_groups WHERE UPPER(name) = ? and tombstone = 0 LIMIT 1`,
     [group.name.toUpperCase()],
@@ -332,6 +331,10 @@ export async function insertCategoryGroup(group) {
       `A ${existingGroup.hidden ? 'hidden ' : ''}’${existingGroup.name}’ category group already exists.`,
     );
   }
+}
+
+export async function insertCategoryGroup(group) {
+  await checkExistingGroups(group);
 
   const lastGroup = await first(`
     SELECT sort_order FROM category_groups WHERE tombstone = 0 ORDER BY sort_order DESC, id DESC LIMIT 1
@@ -345,7 +348,8 @@ export async function insertCategoryGroup(group) {
   return insertWithUUID('category_groups', group);
 }
 
-export function updateCategoryGroup(group) {
+export async function updateCategoryGroup(group) {
+  await checkExistingGroups(group);
   group = categoryGroupModel.validate(group, { update: true });
   return update('category_groups', group);
 }
