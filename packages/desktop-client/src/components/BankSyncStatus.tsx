@@ -15,7 +15,7 @@ export function BankSyncStatus() {
   const accountsSyncing = useSelector(
     (state: State) => state.account.accountsSyncing,
   );
-  const accountsSyncingCount = accountsSyncing.length;
+  const accountsSyncingCount = 3;
   const count = accountsSyncingCount;
 
   const transitions = useTransition(
@@ -33,11 +33,11 @@ export function BankSyncStatus() {
       style={{
         position: 'absolute',
         top: 0,
-        left: 0,
-        right: 0,
+        left: '50%',
+        transform: 'translate(-50%)',
         marginTop: 5,
         alignItems: 'center',
-        zIndex: 501,
+        zIndex: 1000,
       }}
     >
       {transitions(
